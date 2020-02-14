@@ -78,7 +78,7 @@ public class Parsing extends AppCompatActivity {
 
                 // 전송할 폼 데이터
                 Map<String, String> data = new HashMap<>();
-                data.put("os_username", "");
+                data.put("os_username", "nt11062");
                 data.put("os_password", "");
                 // 로그인(POST)
                 Connection.Response response = Jsoup.connect("https://wiki.navercorp.com/dologin.action")
