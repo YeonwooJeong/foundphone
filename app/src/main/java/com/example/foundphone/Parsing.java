@@ -58,28 +58,28 @@ public class Parsing extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                Connection.Response loginPageResponse = Jsoup.connect("https://wiki.navercorp.com/dologin.action")
-                        .timeout(3000)
-                        .header("Origin", "https://wiki.navercorp.com")
-                        .header("Sec-Fetch-Dest", "document")
-                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-                        .header("Content-Type", "application/x-www-form-urlencoded")
-                        .header("Upgrade-Insecure-Requests", "1")
-                        .method(Connection.Method.GET)
-                        .execute();
+//                Connection.Response loginPageResponse = Jsoup.connect("https://wiki.navercorp.com/dologin.action")
+//                        .timeout(3000)
+//                        .header("Origin", "https://wiki.navercorp.com")
+//                        .header("Sec-Fetch-Dest", "document")
+//                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+//                        .header("Content-Type", "application/x-www-form-urlencoded")
+//                        .header("Upgrade-Insecure-Requests", "1")
+//                        .method(Connection.Method.GET)
+//                        .execute();
                 // 로그인 페이지에서 얻은 쿠키
-                Map<String, String> loginTryCookie = loginPageResponse.cookies();
+//                Map<String, String> loginTryCookie = loginPageResponse.cookies();
 
                 // 로그인 페이지에서 로그인에 함께 전송하는 토큰 얻어내기
-                Document loginPageDocument = loginPageResponse.parse();
+//                Document loginPageDocument = loginPageResponse.parse();
 
-                String os_username = loginPageDocument.select("input.os_username").val();
-                String os_password = loginPageDocument.select("input.os_password").val();
+//                String os_username = loginPageDocument.select("input.os_username").val();
+//                String os_password = loginPageDocument.select("input.os_password").val();
 
                 // 전송할 폼 데이터
                 Map<String, String> data = new HashMap<>();
-                data.put("os_username", "");
-                data.put("os_password", "");
+                data.put("os_username", "nt11062");
+                data.put("os_password", "wkdgns9(");
                 // 로그인(POST)
                 Connection.Response response = Jsoup.connect("https://wiki.navercorp.com/dologin.action")
                         .userAgent(USER_AGENT)
@@ -90,7 +90,7 @@ public class Parsing extends AppCompatActivity {
                         .header("Content-Type", "application/x-www-form-urlencoded")
                         .header("Upgrade-Insecure-Requests", "1")
                         .method(Connection.Method.POST)
-                        .cookies(loginTryCookie)
+//                        .cookies(loginTryCookie)
                         .data(data)
                         .execute();
                 // 로그인 성공 후 얻은 쿠키.
