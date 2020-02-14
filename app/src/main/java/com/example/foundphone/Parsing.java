@@ -14,6 +14,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,8 +26,6 @@ public class Parsing extends AppCompatActivity {
     final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36";
     final String LOGIN_FORM_URL = "https://wiki.navercorp.com/login.action";
     final String LOGIN_ACTION_URL = "https://wiki.navercorp.com/dologin.action";
-    final String USERNAME = "";
-    final String PASSWORD = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,17 +58,49 @@ public class Parsing extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                Connection.Response loginForm = Jsoup.connect(LOGIN_FORM_URL)
+                Connection.Response loginPageResponse = Jsoup.connect("https://wiki.navercorp.com/dologin.action")
+                        .timeout(3000)
+                        .header("Origin", "https://wiki.navercorp.com")
+                        .header("Sec-Fetch-Dest", "document")
+                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+                        .header("Content-Type", "application/x-www-form-urlencoded")
+                        .header("Upgrade-Insecure-Requests", "1")
                         .method(Connection.Method.GET)
-                        .userAgent(USER_AGENT)
                         .execute();
-                Document loginDoc = loginForm.parse(); // this is the document containing response html
-                HashMap<String, String> cookies = new HashMap<>(loginForm.cookies()); // save the cookies to be passed on to next request
-                String authToken = loginDoc.select("#login > form > div:nth-child(1) > input[type=\"hidden\"]:nth-child(2)")
-                        .first()
-                        .attr("value");
+                // 로그인 페이지에서 얻은 쿠키
+                Map<String, String> loginTryCookie = loginPageResponse.cookies();
 
-                Document doc = Jsoup.connect("https://wiki.navercorp.com/pages/viewpage.action?pageId=324075067").get();
+                // 로그인 페이지에서 로그인에 함께 전송하는 토큰 얻어내기
+                Document loginPageDocument = loginPageResponse.parse();
+
+                String os_username = loginPageDocument.select("input.os_username").val();
+                String os_password = loginPageDocument.select("input.os_password").val();
+
+                // 전송할 폼 데이터
+                Map<String, String> data = new HashMap<>();
+                data.put("os_username", "");
+                data.put("os_password", "");
+                // 로그인(POST)
+                Connection.Response response = Jsoup.connect("https://wiki.navercorp.com/dologin.action")
+                        .userAgent(USER_AGENT)
+                        .timeout(3000)
+                        .header("Origin", "https://wiki.navercorp.com")
+                        .header("Sec-Fetch-Dest", "document")
+                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+                        .header("Content-Type", "application/x-www-form-urlencoded")
+                        .header("Upgrade-Insecure-Requests", "1")
+                        .method(Connection.Method.POST)
+                        .cookies(loginTryCookie)
+                        .data(data)
+                        .execute();
+                // 로그인 성공 후 얻은 쿠키.
+                // 쿠키 중 TSESSION 이라는 값을 확인할 수 있다.
+                Map<String, String> loginCookie = response.cookies();
+
+                Document doc = Jsoup.connect("https://wiki.navercorp.com/pages/viewpage.action?pageId=324075067")
+                        .userAgent(USER_AGENT)
+                        .cookies(loginCookie) // 위에서 얻은 '로그인 된' 쿠키
+                        .get();
                 System.out.println(doc);
                 Elements mElementDataSize = doc.select("table[class=relative-table wrapped confluenceTable]").select("tbody tr"); //필요한 녀석만 꼬집어서 지정
                 int mElementSize = mElementDataSize.size(); //목록이 몇개인지 알아낸다. 그만큼 루프를 돌려야 하나깐.
