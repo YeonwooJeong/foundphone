@@ -13,6 +13,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,7 +22,11 @@ import androidx.recyclerview.widget.RecyclerView;
 public class Parsing extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ArrayList<ItemObject> list = new ArrayList();
-
+    final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36";
+    final String LOGIN_FORM_URL = "https://wiki.navercorp.com/login.action";
+    final String LOGIN_ACTION_URL = "https://wiki.navercorp.com/dologin.action";
+    final String USERNAME = "";
+    final String PASSWORD = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,10 +59,16 @@ public class Parsing extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                Connection.Response re = Jsoup.connect("https://wiki.navercorp.com/login.action?os_destination=%2Findex.action&permissionViolation=true")
-                        .data("os_username", "")
-                        .data("os_password","(")
+                Connection.Response loginForm = Jsoup.connect(LOGIN_FORM_URL)
+                        .method(Connection.Method.GET)
+                        .userAgent(USER_AGENT)
                         .execute();
+                Document loginDoc = loginForm.parse(); // this is the document containing response html
+                HashMap<String, String> cookies = new HashMap<>(loginForm.cookies()); // save the cookies to be passed on to next request
+                String authToken = loginDoc.select("#login > form > div:nth-child(1) > input[type=\"hidden\"]:nth-child(2)")
+                        .first()
+                        .attr("value");
+
                 Document doc = Jsoup.connect("https://wiki.navercorp.com/pages/viewpage.action?pageId=324075067").get();
                 System.out.println(doc);
                 Elements mElementDataSize = doc.select("table[class=relative-table wrapped confluenceTable]").select("tbody tr"); //필요한 녀석만 꼬집어서 지정
