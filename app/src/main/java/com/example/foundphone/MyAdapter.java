@@ -41,10 +41,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MyAdapter.ViewHolder holder, int position) {
-
         holder.tv_assetNumber.setText(String.valueOf(mList.get(position).getAssetNumber()));
         holder.tv_itemNumber.setText(String.valueOf(mList.get(position).getItemNumber()));
         holder.tv_phoneNumber.setText(String.valueOf(mList.get(position).getPhoneName()));
+
     }
 
     @Override

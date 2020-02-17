@@ -15,7 +15,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:paddingRight="8dp"
-            android:text="자산번호" />
+            />
 
 
         <TextView
@@ -25,7 +25,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_toRightOf="@+id/tv_assetNumber"
-            android:text="단말번호" />
+             />
 
 
         <TextView
@@ -35,5 +35,5 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_toRightOf="@+id/tv_itemNumber"
-            android:text="기종" />
+             />
 </RelativeLayout>

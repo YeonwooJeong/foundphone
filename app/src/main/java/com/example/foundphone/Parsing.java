@@ -100,7 +100,7 @@ public class Parsing extends AppCompatActivity {
                         .userAgent(USER_AGENT)
                         .cookies(loginCookie) // 위에서 얻은 '로그인 된' 쿠키
                         .get();
-                System.out.println(doc);
+//                System.out.println(doc);
                 Elements mElementDataSize = doc.select("table[class=relative-table wrapped confluenceTable]").select("tbody tr"); //필요한 녀석만 꼬집어서 지정
                 int mElementSize = mElementDataSize.size(); //목록이 몇개인지 알아낸다.
 
@@ -109,18 +109,22 @@ public class Parsing extends AppCompatActivity {
                     Element element = elem.select("td").first();
 //                    String assetNumber = elem.select("tr[class=highlight-grey confluenceTd]").text();
                     String assetNumber = element.text();
+                    System.out.println("assetNumber : "+assetNumber);
                     element = element.nextElementSibling();
                     String itemNumber = element.text();
+                    System.out.println("itemNumber : "+itemNumber);
                     element = element.nextElementSibling();
                     String phoneName = element.text();
+                    System.out.println("phoneName : "+phoneName);
                     //ArrayList에 계속 추가한다.
                     list.add(new ItemObject(assetNumber,itemNumber , phoneName));
                     int i = 0;
-                    System.out.println("----------------------------------------------------"+i++);
+                    System.out.println("----------------------------------------------------"+list.get(i).getAssetNumber());
+                    i++;
                 }
 
                 //추출한 전체 <li> 출력해 보자.
-                Log.d("debug :", "List " + mElementDataSize);
+//                Log.d("debug :", "List " + mElementDataSize);
             } catch (IOException e) {
                 e.printStackTrace();
             }
