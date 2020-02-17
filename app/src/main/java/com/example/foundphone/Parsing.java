@@ -58,20 +58,20 @@ public class Parsing extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-//                Connection.Response loginPageResponse = Jsoup.connect("https://wiki.navercorp.com/dologin.action")
-//                        .timeout(3000)
-//                        .header("Origin", "https://wiki.navercorp.com")
-//                        .header("Sec-Fetch-Dest", "document")
-//                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-//                        .header("Content-Type", "application/x-www-form-urlencoded")
-//                        .header("Upgrade-Insecure-Requests", "1")
-//                        .method(Connection.Method.GET)
-//                        .execute();
-                // 로그인 페이지에서 얻은 쿠키
-//                Map<String, String> loginTryCookie = loginPageResponse.cookies();
+                Connection.Response loginPageResponse = Jsoup.connect("https://wiki.navercorp.com/dologin.action")
+                        .timeout(3000)
+                        .header("Origin", "https://wiki.navercorp.com")
+                        .header("Sec-Fetch-Dest", "document")
+                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+                        .header("Content-Type", "application/x-www-form-urlencoded")
+                        .header("Upgrade-Insecure-Requests", "1")
+                        .method(Connection.Method.GET)
+                        .execute();
+//                 로그인 페이지에서 얻은 쿠키
+                Map<String, String> loginTryCookie = loginPageResponse.cookies();
 
-                // 로그인 페이지에서 로그인에 함께 전송하는 토큰 얻어내기
-//                Document loginPageDocument = loginPageResponse.parse();
+//                 로그인 페이지에서 로그인에 함께 전송하는 토큰 얻어내기
+                Document loginPageDocument = loginPageResponse.parse();
 
 //                String os_username = loginPageDocument.select("input.os_username").val();
 //                String os_password = loginPageDocument.select("input.os_password").val();
@@ -94,7 +94,6 @@ public class Parsing extends AppCompatActivity {
                         .data(data)
                         .execute();
                 // 로그인 성공 후 얻은 쿠키.
-                // 쿠키 중 TSESSION 이라는 값을 확인할 수 있다.
                 Map<String, String> loginCookie = response.cookies();
 
                 Document doc = Jsoup.connect("https://wiki.navercorp.com/pages/viewpage.action?pageId=324075067")
@@ -103,11 +102,11 @@ public class Parsing extends AppCompatActivity {
                         .get();
                 System.out.println(doc);
                 Elements mElementDataSize = doc.select("table[class=relative-table wrapped confluenceTable]").select("tbody tr"); //필요한 녀석만 꼬집어서 지정
-                int mElementSize = mElementDataSize.size(); //목록이 몇개인지 알아낸다. 그만큼 루프를 돌려야 하나깐.
+                int mElementSize = mElementDataSize.size(); //목록이 몇개인지 알아낸다.
 
-                for(Element elem : mElementDataSize){ //이렇게 요긴한 기능이
-                    //영화목록 <li> 에서 다시 원하는 데이터를 추출해 낸다.
-                    Element element = elem.select("tr[class=highlight-grey confluenceTd]").first();
+                for(Element elem : mElementDataSize){
+                    //다시 원하는 데이터를 추출해 낸다.tr td[class=highlight-grey confluenceTd] tr
+                    Element element = elem.select("td").first();
 //                    String assetNumber = elem.select("tr[class=highlight-grey confluenceTd]").text();
                     String assetNumber = element.text();
                     element = element.nextElementSibling();
@@ -115,8 +114,9 @@ public class Parsing extends AppCompatActivity {
                     element = element.nextElementSibling();
                     String phoneName = element.text();
                     //ArrayList에 계속 추가한다.
-//                    list.add(new ItemObject(assetNumber,itemNumber , phoneName));
                     list.add(new ItemObject(assetNumber,itemNumber , phoneName));
+                    int i = 0;
+                    System.out.println("----------------------------------------------------"+i++);
                 }
 
                 //추출한 전체 <li> 출력해 보자.
