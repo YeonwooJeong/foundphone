@@ -1,9 +1,12 @@
 package com.example.foundphone;
 
 import android.app.ProgressDialog;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -24,8 +27,7 @@ public class Parsing extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ArrayList<ItemObject> list = new ArrayList();
     final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36";
-    final String LOGIN_FORM_URL = "https://wiki.navercorp.com/login.action";
-    final String LOGIN_ACTION_URL = "https://wiki.navercorp.com/dologin.action";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

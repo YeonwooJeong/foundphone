@@ -21,5 +21,11 @@
             android:layout_height="wrap_content"
             android:text="QR Scan"
             android:id="@+id/scanQR"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="자산목록"
+            android:id="@+id/dbList"/>
     </LinearLayout>
 </RelativeLayout>
