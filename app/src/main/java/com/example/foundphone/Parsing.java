@@ -2,10 +2,12 @@ package com.example.foundphone;
 
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
@@ -18,6 +20,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,90 +33,108 @@ public class Parsing extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ArrayList<ItemObject> list = new ArrayList();
     final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36";
-    DBHelper dbHelper;
-    SQLiteDatabase database;
-
+    DBHelper dbHelper = new DBHelper(getApplicationContext());
     String tableName;
+
+    // Gets the data repository in write mode
+    SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parsing);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        createDatabase("asset");
-        createTable();
         //AsyncTask 작동시킴(파싱)
         new Description().execute();
     }
 
+    private long putDB(String asset_number, String item_number,String phone_name){
+        //DB insert하는 부분
+        ContentValues values = new ContentValues();
+        values.put(AssetListData.AssetEntry.COLUMN_NAME_ASSETNUMBER, asset_number);
+        values.put(AssetListData.AssetEntry.COLUMN_NAME_ITEMNUMBER, item_number);
+        values.put(AssetListData.AssetEntry.COLUMN_NAME_PHONENAME, phone_name);
 
-    private void createDatabase(String name) {
-        println("createDatabase 호출됨.");
-
-        dbHelper = new DBHelper(this);
-        database = dbHelper.getWritableDatabase();
-
-        println("데이터베이스 생성함 : " + name);
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(AssetListData.AssetEntry.TABLE_NAME, null, values);
+        return newRowId;
     }
+    private List readDb(String[] selectionArgs){
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-    private void createTable() {
-        println("createTable 호출됨.");
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                BaseColumns._ID,
+                AssetListData.AssetEntry.COLUMN_NAME_ASSETNUMBER,
+                AssetListData.AssetEntry.COLUMN_NAME_ITEMNUMBER,
+                AssetListData.AssetEntry.COLUMN_NAME_PHONENAME
+        };
 
-        if (database == null) {
-            println("데이터베이스를 먼저 생성하세요.");
-            return;
+        // Filter results WHERE "title" = 'My Title'
+        String selection = AssetListData.AssetEntry.COLUMN_NAME_ASSETNUMBER + " = ?";
+//        String[] selectionArgs = { "My Title" };
+
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder =
+                AssetListData.AssetEntry.COLUMN_NAME_ITEMNUMBER + " DESC";
+
+        Cursor cursor = db.query(
+                AssetListData.AssetEntry.TABLE_NAME,   // The table to query
+                projection,             // The array of columns to return (pass null to get all)
+                selection,              // The columns for the WHERE clause
+                selectionArgs,          // The values for the WHERE clause
+                null,                   // don't group the rows
+                null,                   // don't filter by row groups
+                sortOrder               // The sort order
+        );
+        List itemIds = new ArrayList<>();
+        while(cursor.moveToNext()) {
+            long itemId = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(AssetListData.AssetEntry._ID));
+            itemIds.add(itemId);
         }
-
-        database.execSQL("create table if not exists assetTable ("
-                + " _id integer PRIMARY KEY autoincrement, "
-                + " assetNumber text, "
-                + " itemNumber text, "
-                + " phoneName text)");
-
-        println("테이블 생성함");
-    }
-
-    private void insertRecord(String asset, String item, String phone) {
-        println("insertRecord 호출됨.");
-
-        if (database == null) {
-            println("데이터베이스를 먼저 생성하세요.");
-            return;
-        }
-
-        if (tableName == null) {
-            println("테이블을 먼저 생성하세요.");
-            return;
-        }
-
-        database.execSQL("insert into assetTable"
-                + "(assetNumber, itemNumber, phoneName) "
-                + " values "
-                + "(asset, item, phone)");
-
-        println("레코드 추가함.");
-    }
-
-    public void executeQuery() {
-        println("executeQuery 호출됨.");
-
-        Cursor cursor = database.rawQuery("select _id, assetNumber, itemNumber, phoneName from assetTable", null);
-        int recordCount = cursor.getCount();
-        println("레코드 개수 : " + recordCount);
-
-        for (int i = 0; i < recordCount; i++) {
-            cursor.moveToNext();
-
-            int id = cursor.getInt(0);
-            String assetNumber = cursor.getString(1);
-            String itemNumber = cursor.getString(2);
-            String phoneName = cursor.getString(3);
-
-            println("레코드 #" + i + " : " + id + ", " + assetNumber + ", " + itemNumber + ", " + phoneName);
-        }
-
         cursor.close();
+
+        return itemIds;
     }
+
+    private int deleteDb(String[] selectionArgs){
+        // Define 'where' part of query.
+        String selection = AssetListData.AssetEntry.COLUMN_NAME_ASSETNUMBER + " LIKE ?";
+        // Specify arguments in placeholder order.
+        // Issue SQL statement.
+        int result = db.delete(AssetListData.AssetEntry.TABLE_NAME, selection, selectionArgs);
+        return result;
+    }
+
+    private int upDateDb(String title, String[] selectionArgs){
+        // New value for one column
+        ContentValues values = new ContentValues();
+        values.put(AssetListData.AssetEntry.COLUMN_NAME_ASSETNUMBER, title);
+
+        // Which row to update, based on the title
+        String selection = AssetListData.AssetEntry.COLUMN_NAME_ASSETNUMBER + " LIKE ?";
+
+        int count = db.update(
+                AssetListData.AssetEntry.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+
+        return count;
+    }
+
+    private void closeDb(){
+        if(dbHelper!=null)
+            dbHelper.close();
+        if(db!=null)
+            db.close();
+    }
+
+
     private class Description extends AsyncTask<Void, Void, Void> {
 
         //진행바표시
@@ -184,23 +205,23 @@ public class Parsing extends AppCompatActivity {
                 for(Element elem : mElementDataSize){
                     //다시 원하는 데이터를 추출해 낸다.tr td[class=highlight-grey confluenceTd] tr
                     Element element = elem.select("td").first();
-//                    String assetNumber = elem.select("tr[class=highlight-grey confluenceTd]").text();
-                    String assetNumber = element.text();
-//                    System.out.println("assetNumber : "+assetNumber);
+//                    String asset_number = elem.select("tr[class=highlight-grey confluenceTd]").text();
+                    String asset_number = element.text();
+//                    System.out.println("asset_number : "+asset_number);
                     element = element.nextElementSibling();
-                    String itemNumber = element.text();
-//                    System.out.println("itemNumber : "+itemNumber);
+                    String item_number = element.text();
+//                    System.out.println("item_number : "+item_number);
                     element = element.nextElementSibling();
-                    String phoneName = element.text();
-//                    System.out.println("phoneName : "+phoneName);
-                    insertRecord(assetNumber,itemNumber,phoneName);
+                    String phone_name = element.text();
+//                    System.out.println("phone_name : "+phone_name);
+                    //DB 데이터 집어넣기
+                    putDB(asset_number,item_number,phone_name);
                     //ArrayList에 계속 추가한다.
-                    list.add(new ItemObject(assetNumber,itemNumber , phoneName));
+                    list.add(new ItemObject(asset_number,item_number , phone_name));
                     int i = 0;
-//                    System.out.println("----------------------------------------------------"+list.get(i).getAssetNumber());
+//                    System.out.println("----------------------------------------------------"+list.get(i).getasset_number());
                     i++;
                 }
-                executeQuery();
                 //추출한 전체 <li> 출력해 보자.
 //                Log.d("debug :", "List " + mElementDataSize);
             } catch (IOException e) {

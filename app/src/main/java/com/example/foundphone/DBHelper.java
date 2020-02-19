@@ -3,41 +3,32 @@ package com.example.foundphone;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import static com.example.foundphone.AssetListData.SQL_CREATE_ENTRIES;
+import static com.example.foundphone.AssetListData.SQL_DELETE_ENTRIES;
 import android.util.Log;
 
+
 public class DBHelper extends SQLiteOpenHelper {
-    public static String NAME = "asset.db";
-    public static int VERSION = 1;
+    public static final String DATABASE_NAME = "asset.db";
+    public static final int DATABASE_VERSION = 1;
+
 
     public DBHelper(Context context) {
-        super(context, NAME, null, VERSION);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     public void onCreate(SQLiteDatabase db) {
-        println("onCreate 호출됨");
-
-        String sql = "create table if not exists assetTable("
-                + " _id integer PRIMARY KEY autoincrement, "
-                + " assetNumber text, "
-                + " itemNumber text, "
-                + " phoneName text)";
-
-        db.execSQL(sql);
-    }
-
-    public void onOpen(SQLiteDatabase db) {
-        println("onOpen 호출됨");
+        db.execSQL(SQL_CREATE_ENTRIES);
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        println("onUpgrade 호출됨 : " + oldVersion + " -> " + newVersion);
-
-        if (newVersion > 1) {
-            db.execSQL("DROP TABLE IF EXISTS assetTable");
-        }
+        // This database is only a cache for online data, so its upgrade policy is
+        // to simply to discard the data and start over
+        db.execSQL(SQL_DELETE_ENTRIES);
+        onCreate(db);
     }
 
-    public void println(String data) {
-        Log.d("DatabaseHelper", data);
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        onUpgrade(db, oldVersion, newVersion);
     }
 }
