@@ -16,7 +16,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         println("onCreate 호출됨");
 
-        String sql = "create table if not exists emp("
+        String sql = "create table if not exists assetTable("
                 + " _id integer PRIMARY KEY autoincrement, "
                 + " assetNumber text, "
                 + " itemNumber text, "
@@ -33,7 +33,7 @@ public class DBHelper extends SQLiteOpenHelper {
         println("onUpgrade 호출됨 : " + oldVersion + " -> " + newVersion);
 
         if (newVersion > 1) {
-            db.execSQL("DROP TABLE IF EXISTS emp");
+            db.execSQL("DROP TABLE IF EXISTS assetTable");
         }
     }
 

@@ -40,6 +40,8 @@ public class Parsing extends AppCompatActivity {
         setContentView(R.layout.activity_parsing);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        createDatabase("asset");
+        createTable();
         //AsyncTask 작동시킴(파싱)
         new Description().execute();
     }
@@ -62,7 +64,7 @@ public class Parsing extends AppCompatActivity {
             return;
         }
 
-        database.execSQL("create table if not exists assets ("
+        database.execSQL("create table if not exists assetTable ("
                 + " _id integer PRIMARY KEY autoincrement, "
                 + " assetNumber text, "
                 + " itemNumber text, "
@@ -84,12 +86,33 @@ public class Parsing extends AppCompatActivity {
             return;
         }
 
-        database.execSQL("insert into assets"
+        database.execSQL("insert into assetTable"
                 + "(assetNumber, itemNumber, phoneName) "
                 + " values "
                 + "(asset, item, phone)");
 
         println("레코드 추가함.");
+    }
+
+    public void executeQuery() {
+        println("executeQuery 호출됨.");
+
+        Cursor cursor = database.rawQuery("select _id, assetNumber, itemNumber, phoneName from assetTable", null);
+        int recordCount = cursor.getCount();
+        println("레코드 개수 : " + recordCount);
+
+        for (int i = 0; i < recordCount; i++) {
+            cursor.moveToNext();
+
+            int id = cursor.getInt(0);
+            String assetNumber = cursor.getString(1);
+            String itemNumber = cursor.getString(2);
+            String phoneName = cursor.getString(3);
+
+            println("레코드 #" + i + " : " + id + ", " + assetNumber + ", " + itemNumber + ", " + phoneName);
+        }
+
+        cursor.close();
     }
     private class Description extends AsyncTask<Void, Void, Void> {
 
@@ -107,6 +130,7 @@ public class Parsing extends AppCompatActivity {
             progressDialog.show();
 
         }
+
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -132,7 +156,7 @@ public class Parsing extends AppCompatActivity {
                 // 전송할 폼 데이터
                 Map<String, String> data = new HashMap<>();
                 data.put("os_username", "nt11062");
-                data.put("os_password", "");
+                data.put("os_password", "wkdgns9(");
                 // 로그인(POST)
                 Connection.Response response = Jsoup.connect("https://wiki.navercorp.com/dologin.action")
                         .userAgent(USER_AGENT)
@@ -162,21 +186,21 @@ public class Parsing extends AppCompatActivity {
                     Element element = elem.select("td").first();
 //                    String assetNumber = elem.select("tr[class=highlight-grey confluenceTd]").text();
                     String assetNumber = element.text();
-                    System.out.println("assetNumber : "+assetNumber);
+//                    System.out.println("assetNumber : "+assetNumber);
                     element = element.nextElementSibling();
                     String itemNumber = element.text();
-                    System.out.println("itemNumber : "+itemNumber);
+//                    System.out.println("itemNumber : "+itemNumber);
                     element = element.nextElementSibling();
                     String phoneName = element.text();
-                    System.out.println("phoneName : "+phoneName);
+//                    System.out.println("phoneName : "+phoneName);
                     insertRecord(assetNumber,itemNumber,phoneName);
                     //ArrayList에 계속 추가한다.
                     list.add(new ItemObject(assetNumber,itemNumber , phoneName));
                     int i = 0;
-                    System.out.println("----------------------------------------------------"+list.get(i).getAssetNumber());
+//                    System.out.println("----------------------------------------------------"+list.get(i).getAssetNumber());
                     i++;
                 }
-
+                executeQuery();
                 //추출한 전체 <li> 출력해 보자.
 //                Log.d("debug :", "List " + mElementDataSize);
             } catch (IOException e) {
