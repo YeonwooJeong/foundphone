@@ -1,6 +1,7 @@
 package com.example.foundphone;
 
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -23,23 +24,73 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import static java.sql.DriverManager.println;
+
 public class Parsing extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ArrayList<ItemObject> list = new ArrayList();
     final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36";
+    DBHelper dbHelper;
+    SQLiteDatabase database;
 
+    String tableName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parsing);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-
         //AsyncTask 작동시킴(파싱)
         new Description().execute();
     }
 
 
+    private void createDatabase(String name) {
+        println("createDatabase 호출됨.");
+
+        dbHelper = new DBHelper(this);
+        database = dbHelper.getWritableDatabase();
+
+        println("데이터베이스 생성함 : " + name);
+    }
+
+    private void createTable() {
+        println("createTable 호출됨.");
+
+        if (database == null) {
+            println("데이터베이스를 먼저 생성하세요.");
+            return;
+        }
+
+        database.execSQL("create table if not exists assets ("
+                + " _id integer PRIMARY KEY autoincrement, "
+                + " assetNumber text, "
+                + " itemNumber text, "
+                + " phoneName text)");
+
+        println("테이블 생성함");
+    }
+
+    private void insertRecord(String asset, String item, String phone) {
+        println("insertRecord 호출됨.");
+
+        if (database == null) {
+            println("데이터베이스를 먼저 생성하세요.");
+            return;
+        }
+
+        if (tableName == null) {
+            println("테이블을 먼저 생성하세요.");
+            return;
+        }
+
+        database.execSQL("insert into assets"
+                + "(assetNumber, itemNumber, phoneName) "
+                + " values "
+                + "(asset, item, phone)");
+
+        println("레코드 추가함.");
+    }
     private class Description extends AsyncTask<Void, Void, Void> {
 
         //진행바표시
@@ -118,6 +169,7 @@ public class Parsing extends AppCompatActivity {
                     element = element.nextElementSibling();
                     String phoneName = element.text();
                     System.out.println("phoneName : "+phoneName);
+                    insertRecord(assetNumber,itemNumber,phoneName);
                     //ArrayList에 계속 추가한다.
                     list.add(new ItemObject(assetNumber,itemNumber , phoneName));
                     int i = 0;
