@@ -19,6 +19,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
+        System.out.println("디비생성");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

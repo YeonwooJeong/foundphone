@@ -33,18 +33,17 @@ public class Parsing extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ArrayList<ItemObject> list = new ArrayList();
     final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36";
-    DBHelper dbHelper = new DBHelper(getApplicationContext());
+    DBHelper dbHelper; //이렇게
+    SQLiteDatabase db;  //이렇게
     String tableName;
-
-    // Gets the data repository in write mode
-    SQLiteDatabase db = dbHelper.getWritableDatabase();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parsing);
-
+        dbHelper = new DBHelper(Parsing.this); //이렇게
+        // Gets the data repository in write mode
+        db = dbHelper.getWritableDatabase(); //이렇게
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         //AsyncTask 작동시킴(파싱)
         new Description().execute();
@@ -58,7 +57,7 @@ public class Parsing extends AppCompatActivity {
         values.put(AssetListData.AssetEntry.COLUMN_NAME_PHONENAME, phone_name);
 
         // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(AssetListData.AssetEntry.TABLE_NAME, null, values);
+        long newRowId = db.insert("assets",null, values);
         return newRowId;
     }
     private List readDb(String[] selectionArgs){
@@ -177,7 +176,7 @@ public class Parsing extends AppCompatActivity {
                 // 전송할 폼 데이터
                 Map<String, String> data = new HashMap<>();
                 data.put("os_username", "nt11062");
-                data.put("os_password", "");
+                data.put("os_password", "wkdgns9(");
                 // 로그인(POST)
                 Connection.Response response = Jsoup.connect("https://wiki.navercorp.com/dologin.action")
                         .userAgent(USER_AGENT)
@@ -222,6 +221,7 @@ public class Parsing extends AppCompatActivity {
 //                    System.out.println("----------------------------------------------------"+list.get(i).getasset_number());
                     i++;
                 }
+                readDb(new String[]{"AC01498351"});
                 //추출한 전체 <li> 출력해 보자.
 //                Log.d("debug :", "List " + mElementDataSize);
             } catch (IOException e) {
