@@ -89,22 +89,16 @@ public class Parsing extends AppCompatActivity {
                 null,                   // don't filter by row groups
                 sortOrder               // The sort order
         );
-        Cursor cursor1 = db.query(
-                AssetListData.AssetEntry.TABLE_NAME,   // The table to query
-                projection,             // The array of columns to return (pass null to get all)
-                selection,              // The columns for the WHERE clause
-                selectionArgs,          // The values for the WHERE clause
-                null,                   // don't group the rows
-                null,                   // don't filter by row groups
-                sortOrder               // The sort order
-        );
         List itemIds = new ArrayList<>();
+        int i = 0;
         while(cursor.moveToNext()) {
-
+            System.out.println("itemId -- :"+i+","+cursor.getString(1));
+            System.out.println("itemId -- :"+i+","+cursor.getString(2));
+            System.out.println("itemId -- :"+i+","+cursor.getString(3));
+            System.out.println("--------------------------------------------------");
             long itemId = cursor.getLong(
                     cursor.getColumnIndexOrThrow(AssetListData.AssetEntry._ID));
             itemIds.add(itemId);
-//            System.out.println("itemId -- :" + itemIds.get);
         }
         cursor.close();
 
