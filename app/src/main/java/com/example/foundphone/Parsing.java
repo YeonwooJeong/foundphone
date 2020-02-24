@@ -99,15 +99,13 @@ public class Parsing extends AppCompatActivity {
                 sortOrder               // The sort order
         );
         List itemIds = new ArrayList<>();
-        int i = 0;
         while(cursor.moveToNext()) {
-            System.out.println("itemId -- :"+i+","+cursor.getString(i));
+
             long itemId = cursor.getLong(
                     cursor.getColumnIndexOrThrow(AssetListData.AssetEntry._ID));
             itemIds.add(itemId);
-            i++;
+//            System.out.println("itemId -- :" + itemIds.get);
         }
-        System.out.println("itemId : "+cursor.getString(i));
         cursor.close();
 
         return itemIds;
