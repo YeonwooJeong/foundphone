@@ -60,6 +60,45 @@ public class Parsing extends AppCompatActivity {
         long newRowId = db.insert("assets",null, values);
         return newRowId;
     }
+    public void readAllDb(){
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                BaseColumns._ID,
+                AssetListData.AssetEntry.COLUMN_NAME_ASSETNUMBER,
+                AssetListData.AssetEntry.COLUMN_NAME_ITEMNUMBER,
+                AssetListData.AssetEntry.COLUMN_NAME_PHONENAME
+        };
+
+        // Filter results WHERE "title" = 'My Title'
+        String selection = AssetListData.AssetEntry.COLUMN_NAME_ASSETNUMBER + " = ?";
+//        String[] selectionArgs = { "My Title" };
+
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder =
+                AssetListData.AssetEntry.COLUMN_NAME_ITEMNUMBER + " DESC";
+
+        Cursor cursor = db.query(
+                AssetListData.AssetEntry.TABLE_NAME,   // The table to query
+                projection,             // The array of columns to return (pass null to get all)
+                null,              // The columns for the WHERE clause
+                null,          // The values for the WHERE clause
+                null,                   // don't group the rows
+                null,                   // don't filter by row groups
+                sortOrder               // The sort order
+        );
+        List itemIds = new ArrayList<>();
+        int i = 0;
+        while(i < cursor.getColumnCount()) {
+//            System.out.println("모든 데이터 "+i+"번째 : "+cursor.getString(i));
+            long itemId = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(AssetListData.AssetEntry._ID));
+            itemIds.add(itemId);
+        }
+        cursor.close();
+    }
     private List readDb(String[] selectionArgs){
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -205,11 +244,10 @@ public class Parsing extends AppCompatActivity {
 //                System.out.println(doc);
                 Elements mElementDataSize = doc.select("table[class=relative-table wrapped confluenceTable]").select("tbody tr"); //필요한 녀석만 꼬집어서 지정
                 int mElementSize = mElementDataSize.size(); //목록이 몇개인지 알아낸다.
-
+                int i = 0;
                 for(Element elem : mElementDataSize){
                     //다시 원하는 데이터를 추출해 낸다.tr td[class=highlight-grey confluenceTd] tr
                     Element element = elem.select("td").first();
-//                    String asset_number = elem.select("tr[class=highlight-grey confluenceTd]").text();
                     String asset_number = element.text();
 //                    System.out.println("asset_number : "+asset_number);
                     element = element.nextElementSibling();
@@ -222,13 +260,14 @@ public class Parsing extends AppCompatActivity {
                     putDB(asset_number,item_number,phone_name);
                     //ArrayList에 계속 추가한다.
                     list.add(new ItemObject(asset_number,item_number , phone_name));
-                    int i = 0;
-//                    System.out.println("----------------------------------------------------"+list.get(i).getasset_number());
+
+                    System.out.println("----------------------------------------------------"+list.get(i).getAssetNumber());
                     i++;
                 }
-                System.out.println("readDB"+readDb(new String[]{"AC01498351"}));
+//                System.out.println("readDB"+readDb(new String[]{"AC01498351"}));
                 //추출한 전체 <li> 출력해 보자.
 //                Log.d("debug :", "List " + mElementDataSize);
+//                readAllDb();
             } catch (IOException e) {
                 e.printStackTrace();
             }
