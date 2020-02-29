@@ -35,12 +35,16 @@ public class Parsing extends AppCompatActivity {
     final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36";
     DBHelper dbHelper; //이렇게
     SQLiteDatabase db;  //이렇게
-    String tableName;
+    String tableName,id,pw;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parsing);
+        Bundle intent = getIntent().getExtras();
+        id = intent.getString("id");
+        pw = intent.getString("pw");
         dbHelper = new DBHelper(Parsing.this); //이렇게
         // Gets the data repository in write mode
         db = dbHelper.getWritableDatabase(); //이렇게
@@ -219,8 +223,8 @@ public class Parsing extends AppCompatActivity {
 
                 // 전송할 폼 데이터
                 Map<String, String> data = new HashMap<>();
-                data.put("os_username", "nt11062");
-                data.put("os_password", "wkdgns9(");
+                data.put("os_username", id);
+                data.put("os_password", pw);
                 // 로그인(POST)
                 Connection.Response response = Jsoup.connect("https://wiki.navercorp.com/dologin.action")
                         .userAgent(USER_AGENT)
