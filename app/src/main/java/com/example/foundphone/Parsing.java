@@ -2,14 +2,11 @@ package com.example.foundphone;
 
 import android.app.ProgressDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -26,8 +23,6 @@ import java.util.Map;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import static java.sql.DriverManager.println;
 
 public class Parsing extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -53,13 +48,13 @@ public class Parsing extends AppCompatActivity {
         new Description().execute();
     }
 
-    private long putDB(String asset_number, String item_number,String phone_name,String check){
+    private long putDB(String asset_number, String item_number,String phone_name,String status){
         //DB insert하는 부분
         ContentValues values = new ContentValues();
         values.put(AssetListData.AssetEntry.COLUMN_NAME_ASSETNUMBER, asset_number);
         values.put(AssetListData.AssetEntry.COLUMN_NAME_ITEMNUMBER, item_number);
         values.put(AssetListData.AssetEntry.COLUMN_NAME_PHONENAME, phone_name);
-        values.put(AssetListData.AssetEntry.COLUMN_NAME_CHECK, check);
+        values.put(AssetListData.AssetEntry.COLUMN_NAME_STATUS, status);
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert("assets",null, values);
@@ -75,7 +70,7 @@ public class Parsing extends AppCompatActivity {
                 AssetListData.AssetEntry.COLUMN_NAME_ASSETNUMBER,
                 AssetListData.AssetEntry.COLUMN_NAME_ITEMNUMBER,
                 AssetListData.AssetEntry.COLUMN_NAME_PHONENAME,
-                AssetListData.AssetEntry.COLUMN_NAME_CHECK
+                AssetListData.AssetEntry.COLUMN_NAME_STATUS
         };
 
         // Filter results WHERE "title" = 'My Title'
@@ -115,7 +110,7 @@ public class Parsing extends AppCompatActivity {
                 AssetListData.AssetEntry.COLUMN_NAME_ASSETNUMBER,
                 AssetListData.AssetEntry.COLUMN_NAME_ITEMNUMBER,
                 AssetListData.AssetEntry.COLUMN_NAME_PHONENAME,
-                AssetListData.AssetEntry.COLUMN_NAME_CHECK
+                AssetListData.AssetEntry.COLUMN_NAME_STATUS
         };
 
         // Filter results WHERE "title" = 'My Title'
@@ -270,6 +265,7 @@ public class Parsing extends AppCompatActivity {
                     list.add(new ItemObject(asset_number,item_number, phone_name,"x"));
 
                     System.out.println("----------------------------------------------------"+list.get(i).getAssetNumber());
+                    System.out.println("----------------------------------------------------"+list.get(i).getStatus());
                     i++;
                 }
 //                System.out.println("readDB"+readDb(new String[]{"AC01498351"}));
