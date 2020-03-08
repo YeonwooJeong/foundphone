@@ -4,12 +4,14 @@ public class ItemObject {
     private String assetNumber;
     private String itemNumber;
     private String phoneName;
+    private String check;
 
 
-    public ItemObject(String assetNumber, String itemNumber, String phoneNumber){
+    public ItemObject(String assetNumber, String itemNumber, String phoneNumber, String check){
         this.assetNumber = assetNumber;
         this.itemNumber = itemNumber;
         this.phoneName = phoneNumber;
+        this.check = check;
     }
 
 
@@ -23,5 +25,8 @@ public class ItemObject {
 
     public String getPhoneName() {
         return phoneName;
+    }
+    public String getCheck() {
+        return check;
     }
 }

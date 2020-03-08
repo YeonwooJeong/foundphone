@@ -13,6 +13,7 @@ public final class AssetListData {
         public static final String COLUMN_NAME_ASSETNUMBER = "asset_number";
         public static final String COLUMN_NAME_ITEMNUMBER = "item_number";
         public static final String COLUMN_NAME_PHONENAME = "phone_name";
+        public static final String COLUMN_NAME_CHECK = "check";
     }
 
     public static final String SQL_CREATE_ENTRIES =
@@ -20,7 +21,8 @@ public final class AssetListData {
                     AssetEntry._ID + " INTEGER PRIMARY KEY," +
                     AssetEntry.COLUMN_NAME_ASSETNUMBER + " TEXT," +
                     AssetEntry.COLUMN_NAME_ITEMNUMBER + " TEXT," +
-                    AssetEntry.COLUMN_NAME_PHONENAME + " TEXT)";
+                    AssetEntry.COLUMN_NAME_PHONENAME + " TEXT" +
+                    AssetEntry.COLUMN_NAME_CHECK + " TEXT)";
 
     public static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + AssetEntry.TABLE_NAME;

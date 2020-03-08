@@ -16,7 +16,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private ArrayList<ItemObject> mList;
 
     public  class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView tv_assetNumber, tv_itemNumber, tv_phoneNumber;
+        private TextView tv_assetNumber, tv_itemNumber, tv_phoneNumber, tv_check;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -24,6 +24,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             tv_assetNumber = (TextView) itemView.findViewById(R.id.tv_assetNumber);
             tv_itemNumber = (TextView) itemView.findViewById(R.id.tv_itemNumber);
             tv_phoneNumber = (TextView) itemView.findViewById(R.id.tv_phoneNumber);
+            tv_check = (TextView) itemView.findViewById(R.id.tv_check);
         }
     }
 
@@ -44,6 +45,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.tv_assetNumber.setText(String.valueOf(mList.get(position).getAssetNumber()));
         holder.tv_itemNumber.setText(String.valueOf(mList.get(position).getItemNumber()));
         holder.tv_phoneNumber.setText(String.valueOf(mList.get(position).getPhoneName()));
+        holder.tv_check.setText(String.valueOf(mList.get(position).getCheck()));
     }
 
     @Override

@@ -53,12 +53,13 @@ public class Parsing extends AppCompatActivity {
         new Description().execute();
     }
 
-    private long putDB(String asset_number, String item_number,String phone_name){
+    private long putDB(String asset_number, String item_number,String phone_name,String check){
         //DB insert하는 부분
         ContentValues values = new ContentValues();
         values.put(AssetListData.AssetEntry.COLUMN_NAME_ASSETNUMBER, asset_number);
         values.put(AssetListData.AssetEntry.COLUMN_NAME_ITEMNUMBER, item_number);
         values.put(AssetListData.AssetEntry.COLUMN_NAME_PHONENAME, phone_name);
+        values.put(AssetListData.AssetEntry.COLUMN_NAME_CHECK, check);
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert("assets",null, values);
@@ -73,7 +74,8 @@ public class Parsing extends AppCompatActivity {
                 BaseColumns._ID,
                 AssetListData.AssetEntry.COLUMN_NAME_ASSETNUMBER,
                 AssetListData.AssetEntry.COLUMN_NAME_ITEMNUMBER,
-                AssetListData.AssetEntry.COLUMN_NAME_PHONENAME
+                AssetListData.AssetEntry.COLUMN_NAME_PHONENAME,
+                AssetListData.AssetEntry.COLUMN_NAME_CHECK
         };
 
         // Filter results WHERE "title" = 'My Title'
@@ -112,7 +114,8 @@ public class Parsing extends AppCompatActivity {
                 BaseColumns._ID,
                 AssetListData.AssetEntry.COLUMN_NAME_ASSETNUMBER,
                 AssetListData.AssetEntry.COLUMN_NAME_ITEMNUMBER,
-                AssetListData.AssetEntry.COLUMN_NAME_PHONENAME
+                AssetListData.AssetEntry.COLUMN_NAME_PHONENAME,
+                AssetListData.AssetEntry.COLUMN_NAME_CHECK
         };
 
         // Filter results WHERE "title" = 'My Title'
@@ -158,6 +161,7 @@ public class Parsing extends AppCompatActivity {
     }
 
     private int upDateDb(String title, String[] selectionArgs){
+        //체크여부 수정 코드 필요
         // New value for one column
         ContentValues values = new ContentValues();
         values.put(AssetListData.AssetEntry.COLUMN_NAME_ASSETNUMBER, title);
@@ -261,9 +265,9 @@ public class Parsing extends AppCompatActivity {
                     String phone_name = element.text();
 //                    System.out.println("phone_name : "+phone_name);
                     //DB 데이터 집어넣기
-                    putDB(asset_number,item_number,phone_name);
+                    putDB(asset_number,item_number,phone_name,"x");
                     //ArrayList에 계속 추가한다.
-                    list.add(new ItemObject(asset_number,item_number , phone_name));
+                    list.add(new ItemObject(asset_number,item_number, phone_name,"x"));
 
                     System.out.println("----------------------------------------------------"+list.get(i).getAssetNumber());
                     i++;
