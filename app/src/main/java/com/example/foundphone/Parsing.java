@@ -91,9 +91,9 @@ public class Parsing extends AppCompatActivity {
                 sortOrder               // The sort order
         );
         List itemIds = new ArrayList<>();
-        int i = 0;
-        while(i < cursor.getColumnCount()) {
-//            System.out.println("모든 데이터 "+i+"번째 : "+cursor.getString(i));
+        while(cursor.moveToNext()) {
+            System.out.println("결과 -- : "+cursor.getString(2));
+            System.out.println("--------------------------------------------------");
             long itemId = cursor.getLong(
                     cursor.getColumnIndexOrThrow(AssetListData.AssetEntry._ID));
             itemIds.add(itemId);
@@ -139,7 +139,9 @@ public class Parsing extends AppCompatActivity {
             System.out.println("--------------------------------------------------");
             long itemId = cursor.getLong(
                     cursor.getColumnIndexOrThrow(AssetListData.AssetEntry._ID));
+            System.out.println("itemId : "+itemId);
             itemIds.add(itemId);
+
         }
         cursor.close();
 
@@ -271,7 +273,7 @@ public class Parsing extends AppCompatActivity {
 //                System.out.println("readDB"+readDb(new String[]{"AC01498351"}));
                 //추출한 전체 <li> 출력해 보자.
 //                Log.d("debug :", "List " + mElementDataSize);
-//                readAllDb();
+                readAllDb();
             } catch (IOException e) {
                 e.printStackTrace();
             }
