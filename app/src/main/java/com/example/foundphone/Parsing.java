@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -92,12 +93,12 @@ public class Parsing extends AppCompatActivity {
         );
         List itemIds = new ArrayList<>();
         while(cursor.moveToNext()) {
-            System.out.println("결과 -- : "+cursor.getString(2));
-            System.out.println("--------------------------------------------------");
             long itemId = cursor.getLong(
                     cursor.getColumnIndexOrThrow(AssetListData.AssetEntry._ID));
             itemIds.add(itemId);
         }
+        for(int i = 0; i< itemIds.size(); i++)
+            System.out.println("itemid : "+itemIds.get(i));
         cursor.close();
     }
     private List readDb(String[] selectionArgs){
@@ -219,9 +220,6 @@ public class Parsing extends AppCompatActivity {
 //                 로그인 페이지에서 로그인에 함께 전송하는 토큰 얻어내기
                 Document loginPageDocument = loginPageResponse.parse();
 
-//                String os_username = loginPageDocument.select("input.os_username").val();
-//                String os_password = loginPageDocument.select("input.os_password").val();
-
                 // 전송할 폼 데이터
                 Map<String, String> data = new HashMap<>();
                 data.put("os_username", id);
@@ -265,9 +263,6 @@ public class Parsing extends AppCompatActivity {
                     putDB(asset_number,item_number,phone_name,"x");
                     //ArrayList에 계속 추가한다.
                     list.add(new ItemObject(asset_number,item_number, phone_name,"x"));
-
-                    System.out.println("----------------------------------------------------"+list.get(i).getAssetNumber());
-                    System.out.println("----------------------------------------------------"+list.get(i).getStatus());
                     i++;
                 }
 //                System.out.println("readDB"+readDb(new String[]{"AC01498351"}));
