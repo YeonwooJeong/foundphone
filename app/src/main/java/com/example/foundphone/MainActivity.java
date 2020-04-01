@@ -3,6 +3,7 @@ package com.example.foundphone;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -12,15 +13,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.room.Room;
 
 public class MainActivity extends AppCompatActivity {
     private Button parsingBtn;
     private Button scanQRBtn;
     private Button ListBtn;
     private EditText et_id;
-    private EditText et_pw;
+    private EditText et_pw,mTodoEditText;
     private CheckBox cb_save;
+    private TextView mTextView;
     String id,pw;
     private Context mContext;
 
@@ -29,6 +35,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mContext = this; // 이거 필수!
+        mTodoEditText = findViewById(R.id.editText);
+        mTextView = findViewById(R.id.textView);
+        final AppDatabase db = Room.databaseBuilder(this, AppDatabase.class
+        ,"todo-db")
+                .build();
+        //UI 갱신
+        db.todoDao().getAll().observe(this, todos ->
+                mTextView.setText(todos.toString()));
+
+        // 버튼 클릭시 DB에 insert
+        findViewById(R.id.button).setOnClickListener(v ->
+                new InsertAsyncTask(db.todoDao())
+                .execute(new Todo(mTodoEditText.getText().toString())));
+
+        findViewById(R.id.button2).setOnClickListener(v ->
+                new DeleteAsyncTask(db.todoDao())
+                        .execute());
 
         parsingBtn = (Button) findViewById(R.id.parse);
         scanQRBtn = (Button) findViewById(R.id.scanQR);
@@ -99,5 +122,33 @@ public class MainActivity extends AppCompatActivity {
 //                startActivity(intent);
             }
         });
+    }
+    //추가
+    private static class InsertAsyncTask extends AsyncTask<Todo, Void, Void> {
+        private TodoDao mTodoDao;
+
+        public InsertAsyncTask(TodoDao todoDao){
+            this.mTodoDao = todoDao;
+        }
+
+        @Override
+        protected Void doInBackground(Todo... todos) {
+            mTodoDao.insert(todos[0]);
+            return null;
+        }
+    }
+    //삭제
+    private static class DeleteAsyncTask extends AsyncTask<Todo, Void, Void> {
+        private TodoDao mTodoDao;
+
+        public DeleteAsyncTask(TodoDao todoDao){
+            this.mTodoDao = todoDao;
+        }
+
+        @Override
+        protected Void doInBackground(Todo... todos) {
+            mTodoDao.deleteAll();
+            return null;
+        }
     }
 }
