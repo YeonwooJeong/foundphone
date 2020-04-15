@@ -15,6 +15,12 @@ public class Todo {
     public Todo(String status) {
         this.status = status;
     }
+//    public Todo(String assetNumber,String itemNumber,String phoneName,String status) {
+//        this.assetNumber = assetNumber;
+//        this.itemNumber = itemNumber;
+//        this.phoneName = phoneName;
+//        this.status = status;
+//    }
 
     public int getId() {
         return id;
