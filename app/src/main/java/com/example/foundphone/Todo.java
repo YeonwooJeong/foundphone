@@ -12,8 +12,8 @@ public class Todo {
     private String phoneName;
     private String status;
 
-    public Todo(String assetNumber) {
-        this.assetNumber = assetNumber;
+    public Todo(String status) {
+        this.status = status;
     }
 
     public int getId() {

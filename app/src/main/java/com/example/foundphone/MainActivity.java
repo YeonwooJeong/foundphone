@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
     }
     //추가
     private static class InsertAsyncTask extends AsyncTask<Todo, Void, Void> {
+
         private TodoDao mTodoDao;
 
         public InsertAsyncTask(TodoDao todoDao){
